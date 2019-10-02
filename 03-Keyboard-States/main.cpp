@@ -39,7 +39,7 @@ CMario *mario;
 class CSampleKeyHander: public CKeyEventHandler
 {
 	virtual void KeyState(BYTE *states);
-	virtual void OnKeyDown(int KeyCode);
+    virtual void OnKeyDown(int KeyCode);
 	virtual void OnKeyUp(int KeyCode);
 };
 
@@ -50,35 +50,74 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 	switch (KeyCode)
 	{
-	case DIK_SPACE:
-		mario->SetState(MARIO_STATE_JUMP);
-		break;
-	/*case DIK_DOWN:
-		mario->SetState(MARIO_STATE_SIT);
-		break;*/
+	
+		case DIK_SPACE:
+			mario->SetState(MARIO_STATE_JUMP);
+			break;
+		case DIK_A:
+			switch (mario->getStatus())
+			{
+			case 0:
+				mario->setStatus(1);
+				break;
+			case 1:
+				mario->setStatus(2);
+				break;
+			case 2:
+				mario->setStatus(0);
+				break;
+			}
+			break;
 	}
 }
-
-void CSampleKeyHander::OnKeyUp(int KeyCode)
-{
-	DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
-	/*switch (KeyCode)
+	void CSampleKeyHander::OnKeyUp(int KeyCode)
 	{
-	case DIK_DOWN:
-		mario->SetState(MARIO_STATE_IDLE);
-		break;
-	}*/
-}
-
+		DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
+		/*switch (KeyCode)
+		{
+		case DIK_DOWN:
+			mario->SetState(MARIO_STATE_IDLE);
+			break;
+		}*/
+	}
 void CSampleKeyHander::KeyState(BYTE *states)
 {
-	if (game->IsKeyDown(DIK_RIGHT))
-		mario->SetState(MARIO_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT))
-		mario->SetState(MARIO_STATE_WALKING_LEFT);
-	else if (game->IsKeyDown(DIK_DOWN))
-		mario->SetState(MARIO_STATE_SIT);
-	else mario->SetState(MARIO_STATE_IDLE);
+	//if (game->IsKeyDown(DIK_RIGHT))
+	//	mario->SetState(MARIO_STATE_WALKING_RIGHT);
+	//else if (game->IsKeyDown(DIK_LEFT))
+	//	mario->SetState(MARIO_STATE_WALKING_LEFT);
+	//else if (game->IsKeyDown(DIK_DOWN))
+	//	mario->SetState(MARIO_STATE_SIT);
+	//else mario->SetState(MARIO_STATE_IDLE);
+	/*mario->ChangeState();*/
+	if (mario->getStatus() == 0)
+	{
+		if (game->IsKeyDown(DIK_RIGHT))
+			mario->SetState(MARIO_STATE_WALKING_RIGHT);
+		else if (game->IsKeyDown(DIK_LEFT))
+			mario->SetState(MARIO_STATE_WALKING_LEFT);
+		else if (game->IsKeyDown(DIK_DOWN))
+			mario->SetState(MARIO_STATE_SIT);
+		else mario->SetState(MARIO_STATE_IDLE);
+	}
+	if (mario->getStatus() == 1)
+	{
+		if (game->IsKeyDown(DIK_RIGHT))
+			mario->SetState(MARIO_STATE_WHITE_WALKING_RIGHT);
+		else if (game->IsKeyDown(DIK_LEFT))
+			mario->SetState(MARIO_STATE_WHITE_WALKING_LEFT);
+		else if (game->IsKeyDown(DIK_DOWN))
+			mario->SetState(MARIO_STATE_WHITE_SIT);
+		else mario->SetState(MARIO_STATE_WHITE_IDLE);
+	}
+	if (mario->getStatus() == 2)
+	{
+		if (game->IsKeyDown(DIK_RIGHT))
+			mario->SetState(MARIO_STATE_LITTLE_WALKING_RIGHT);
+		else if (game->IsKeyDown(DIK_LEFT))
+			mario->SetState(MARIO_STATE_LITTLE_WALKING_LEFT);
+		else mario->SetState(MARIO_STATE_LITTLE_IDLE);
+	}
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -102,14 +141,14 @@ void LoadResources()
 {
 	CTextures * textures = CTextures::GetInstance();
 
-	textures->Add(ID_TEX_MARIO, L"textures\\mario.png",D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_MARIO, L"textures\\mario.png",D3DCOLOR_XRGB(255, 255, 255));
 
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
 	LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
 
-
+	//Normal Mario Sprites
 	sprites->Add(10001, 246, 154, 260, 181, texMario);
 
 	sprites->Add(10002, 275, 154, 290, 181, texMario);
@@ -122,17 +161,36 @@ void LoadResources()
 
 	sprites->Add(10030, 2, 233, 23, 260, texMario); //sit left
 	sprites->Add(10020, 422, 233, 441, 260, texMario);//sit right
-	LPANIMATION ani;
+	//White Mario Sprites
+	sprites->Add(20001, 182, 389, 206, 426,  texMario); //idle white left
+	sprites->Add(20002, 150, 389, 176, 426,  texMario);
+	sprites->Add(20003, 120, 389,   146, 426, texMario);
 
+	sprites->Add(20011, 241, 389, 264, 426,  texMario);//white idle right
+	sprites->Add(20012,  271, 389,  294, 426, texMario);
+	sprites->Add(20013,  301, 389,  324, 426, texMario);
+
+	sprites->Add(20021, 425, 474, 442, 502,  texMario);//white sit right
+	sprites->Add(20022,  4, 474, 22, 502, texMario);// white sit left
+	//Little Mario Sprites
+	sprites->Add(30001, 184, -1, 201, 18,  texMario); //idle little left 
+	sprites->Add(30002,  154, -1, 171, 18,  texMario);
+	sprites->Add(30003, 124, -1,   141, 18, texMario);
+
+	sprites->Add(30011, 245, -1,   261, 18, texMario);//little idle right
+	sprites->Add(30012, 275, -1, 291, 18,  texMario);
+	sprites->Add(30013, 305, -1, 321, 18,  texMario);
+	LPANIMATION ani;
+//Normal Mario
 	ani = new CAnimation(100);
 	/*ani->Add(10001);*/
 	ani->Add(10020);
-	animations->Add(600,ani);//sit left
+	animations->Add(600,ani);//sit right
 
 	ani = new CAnimation(100);
 	/*ani->Add(10011);*/
 	ani->Add(10030);
-	animations->Add(601, ani); //sit right
+	animations->Add(601, ani); //sit left
 
 	ani = new CAnimation(100);	
 	ani->Add(10001);
@@ -154,6 +212,54 @@ void LoadResources()
 	ani->Add(10012);
 	ani->Add(10013);
 	animations->Add(501, ani);
+	//White Mario Ani
+	ani = new CAnimation(100);
+	ani->Add(20001);
+	animations->Add(701, ani);//idle left
+
+	ani = new CAnimation(100);
+	ani->Add(20001);
+	ani->Add(20002);
+	ani->Add(20003);
+	animations->Add(801, ani);//walking_left
+	
+	ani = new CAnimation(100);
+	ani->Add(20011);
+	animations->Add(700, ani);//idle_right
+
+	ani = new CAnimation(100);
+	ani->Add(20011);
+	ani->Add(20012);
+	ani->Add(20013);
+	animations->Add(800, ani);//walking_right
+
+	ani = new CAnimation(100);
+	ani->Add(20021);
+	animations->Add(900, ani);//sit_rihgt;
+
+	ani = new CAnimation(100);
+	ani->Add(20022);
+	animations->Add(901, ani);//sit_left;
+	//little mario ani
+	ani = new CAnimation(100);
+	ani->Add(30001);
+	animations->Add(10001, ani);//idle left
+
+	ani = new CAnimation(100);
+	ani->Add(30001);
+	ani->Add(30002);
+	ani->Add(30003);
+	animations->Add(10011, ani);//walking_left
+
+	ani = new CAnimation(100);
+	ani->Add(30011);
+	animations->Add(10000, ani);//idle right
+
+	ani = new CAnimation(100);
+	ani->Add(30011);
+	ani->Add(30012);
+	ani->Add(30013);
+	animations->Add(10010, ani);//walking_right;
 
 	mario = new CMario();
 	CMario::AddAnimation(400);		// idle right
@@ -162,6 +268,19 @@ void LoadResources()
 	CMario::AddAnimation(501);		// walk left
 	CMario::AddAnimation(600);     
 	CMario::AddAnimation(601);
+	/*white mario*/
+	CMario::AddAnimation(700);
+	CMario::AddAnimation(701);
+	CMario::AddAnimation(800);
+	CMario::AddAnimation(801);
+	CMario::AddAnimation(900);
+	CMario::AddAnimation(901);
+	//little mario
+	CMario::AddAnimation(10000);
+	CMario::AddAnimation(10001);
+	CMario::AddAnimation(10010);
+	CMario::AddAnimation(10011);
+
 	mario->SetPosition(0.0f, 100.0f);
 }
 
