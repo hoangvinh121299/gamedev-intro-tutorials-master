@@ -1,6 +1,5 @@
 #include "Mario.h"
 #include "Game.h"
-CGame *gameex;
 void CMario::Update(DWORD dt)
 {
 	CGameObject::Update(dt);
