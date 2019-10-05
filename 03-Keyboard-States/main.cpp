@@ -12,17 +12,21 @@
 #include <windows.h>
 #include <d3d9.h>
 #include <d3dx9.h>
-
+#include <iostream>
 #include "debug.h"
 #include "Game.h"
 #include "GameObject.h"
 #include "Textures.h"
-
+#include <fstream>
+#include <string>
 #include "Mario.h"
-
+#include <vector>
+#include<istream>
+#include<iterator>
+#include<sstream>
+#define _CRT_SECURE_NO_WARNINGS
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"02 - Sprite animation"
-
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(200, 200, 255)
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -32,10 +36,11 @@
 #define ID_TEX_MARIO 0
 #define ID_TEX_ENEMY 10
 #define ID_TEX_MISC 20
-
+using namespace std;
 CGame *game;
 CMario *mario;
-
+vector <string> varText;
+vector <string> id_Locat;
 class CSampleKeyHander: public CKeyEventHandler
 {
 	virtual void KeyState(BYTE *states);
@@ -43,7 +48,18 @@ class CSampleKeyHander: public CKeyEventHandler
 	virtual void OnKeyUp(int KeyCode);
 };
 
-CSampleKeyHander * keyHandler; 
+CSampleKeyHander * keyHandler;
+void loadVectorString()
+{
+	fstream input("textures\\load.txt");
+	while (!input.eof())
+	{
+		char temp[255];
+		input.getline(temp, 255);
+		string load = temp;
+		varText.push_back(temp);
+	}
+}
 
 void CSampleKeyHander::OnKeyDown(int KeyCode)
 {
@@ -140,46 +156,51 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void LoadResources()
 {
 	CTextures * textures = CTextures::GetInstance();
-
-	textures->Add(ID_TEX_MARIO, L"textures\\mario.png",D3DCOLOR_XRGB(255, 255, 255));
-
+	loadVectorString();
+	textures->Add(ID_TEX_MARIO,L"textures\\mario.png",D3DCOLOR_XRGB(255, 255, 255));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
-	
 	LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
+//load Spritre from TXT Flie
+	for (int i = 0; i < varText.size(); i++)
+	{
+		istringstream iss(varText[i]);
+		vector<string> id_Locat((istream_iterator<string>(iss)),
+		                           istream_iterator<string>());
+		sprites->Add(stoi(id_Locat[0]), stoi(id_Locat[1]), stoi(id_Locat[2]), stoi(id_Locat[3]),stoi(id_Locat[4]), texMario);
+	}
+	////Normal Mario Sprites
+	//sprites->Add(10001, 246, 154, 260, 181, texMario);
 
-	//Normal Mario Sprites
-	sprites->Add(10001, 246, 154, 260, 181, texMario);
+	//sprites->Add(10002, 275, 154, 290, 181, texMario);
+	//sprites->Add(10003, 304, 154, 321, 181, texMario);
 
-	sprites->Add(10002, 275, 154, 290, 181, texMario);
-	sprites->Add(10003, 304, 154, 321, 181, texMario);
+	//sprites->Add(10011, 186, 154, 200, 181, texMario);
 
-	sprites->Add(10011, 186, 154, 200, 181, texMario);
+	//sprites->Add(10012, 155, 154, 170, 181, texMario);
+	//sprites->Add(10013, 125, 154, 140, 181, texMario);
 
-	sprites->Add(10012, 155, 154, 170, 181, texMario);
-	sprites->Add(10013, 125, 154, 140, 181, texMario);
+	//sprites->Add(10030, 2, 233, 23, 260, texMario); //sit left
+	//sprites->Add(10020, 422, 233, 441, 260, texMario);//sit right
+	////White Mario Sprites
+	//sprites->Add(20001, 182, 389, 206, 426,  texMario); //idle white left
+	//sprites->Add(20002, 150, 389, 176, 426,  texMario);
+	//sprites->Add(20003, 120, 389,   146, 426, texMario);
 
-	sprites->Add(10030, 2, 233, 23, 260, texMario); //sit left
-	sprites->Add(10020, 422, 233, 441, 260, texMario);//sit right
-	//White Mario Sprites
-	sprites->Add(20001, 182, 389, 206, 426,  texMario); //idle white left
-	sprites->Add(20002, 150, 389, 176, 426,  texMario);
-	sprites->Add(20003, 120, 389,   146, 426, texMario);
+	//sprites->Add(20011, 241, 389, 264, 426,  texMario);//white idle right
+	//sprites->Add(20012,  271, 389,  294, 426, texMario);
+	//sprites->Add(20013,  301, 389,  324, 426, texMario);
 
-	sprites->Add(20011, 241, 389, 264, 426,  texMario);//white idle right
-	sprites->Add(20012,  271, 389,  294, 426, texMario);
-	sprites->Add(20013,  301, 389,  324, 426, texMario);
+	//sprites->Add(20021, 425, 474, 442, 502,  texMario);//white sit right
+	//sprites->Add(20022,  4, 474, 22, 502, texMario);// white sit left
+	////Little Mario Sprites
+	//sprites->Add(30001, 184, -1, 201, 18,  texMario); //idle little left 
+	//sprites->Add(30002,  154, -1, 171, 18,  texMario);
+	//sprites->Add(30003, 124, -1,   141, 18, texMario);
 
-	sprites->Add(20021, 425, 474, 442, 502,  texMario);//white sit right
-	sprites->Add(20022,  4, 474, 22, 502, texMario);// white sit left
-	//Little Mario Sprites
-	sprites->Add(30001, 184, -1, 201, 18,  texMario); //idle little left 
-	sprites->Add(30002,  154, -1, 171, 18,  texMario);
-	sprites->Add(30003, 124, -1,   141, 18, texMario);
-
-	sprites->Add(30011, 245, -1,   261, 18, texMario);//little idle right
-	sprites->Add(30012, 275, -1, 291, 18,  texMario);
-	sprites->Add(30013, 305, -1, 321, 18,  texMario);
+	//sprites->Add(30011, 245, -1,   261, 18, texMario);//little idle right
+	//sprites->Add(30012, 275, -1, 291, 18,  texMario);
+	//sprites->Add(30013, 305, -1, 321, 18,  texMario);
 	LPANIMATION ani;
 //Normal Mario
 	ani = new CAnimation(100);
@@ -418,6 +439,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	LoadResources();
 	Run();
-
 	return 0;
 }

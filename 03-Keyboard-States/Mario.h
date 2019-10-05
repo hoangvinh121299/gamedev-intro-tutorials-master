@@ -49,7 +49,6 @@ public:
 	void Update(DWORD dt);
 	void Render();
 	void SetState(int state);
-	void ChangeState();
 	void setStatus(int status) { this->status = status; }
 	int getStatus() { return this->status; }
 };
