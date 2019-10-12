@@ -273,7 +273,7 @@ void LoadResources()
 		goomba = new CGoomba();
 		goomba->AddAnimation(701);
 		goomba->AddAnimation(702);
-		goomba->SetPosition(200 + i*60, 135);
+		goomba->SetPosition(50.0f+i*60,0);
 		goomba->SetState(GOOMBA_STATE_WALKING);
 		objects.push_back(goomba);
 	}
