@@ -42,13 +42,13 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		//if (nx != 0) vx = 0;
 		if (ny != 0) vy = 0;
 	}
-	if (vx < 0 && x < 0) {
+	/*if (vx < 0 && x < 0) {
 		x = 0; vx = -vx;
 	}
 
 	if (vx > 0 && x > 290) {
 		x = 290; vx = -vx;
-	}
+	}*/
 }
 
 void CGoomba::Render()

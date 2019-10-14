@@ -35,8 +35,8 @@
 #define MAIN_WINDOW_TITLE L"04 - Collision"
 
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(255, 255, 200)
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#define SCREEN_WIDTH 600
+#define SCREEN_HEIGHT 600
 
 #define MAX_FRAME_RATE 120
 
@@ -266,7 +266,13 @@ void LoadResources()
 		brick->SetPosition(0 + i*16.0f, 150);
 		objects.push_back(brick);
 	}
-
+	for (int i = 0; i < 40; i++)
+	{
+		CBrick *brick = new CBrick();
+			brick->AddAnimation(601);
+			brick->SetPosition(-150 + i * 16.0f, 250);
+			objects.push_back(brick);
+	}
 	// and Goombas 
 	for (int i = 0; i < 4; i++)
 	{
