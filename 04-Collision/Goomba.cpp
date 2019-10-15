@@ -2,8 +2,8 @@
 
 void CGoomba::GetBoundingBox(float &left, float &top, float &right, float &bottom)
 {
-	left = x;
-	top = y;
+	left = x+15;
+	top = y+15;
 	right = x + GOOMBA_BBOX_WIDTH;
 
 	if (state == GOOMBA_STATE_DIE)
@@ -24,7 +24,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
 	vy +=GOMMBA_GRAVITY * dt;
-	if (state != GOOMBA_STATE_DIE)
+	/*if (state != GOOMBA_STATE_DIE)*/
 		CalcPotentialCollisions(coObjects, coEvents);
 
 	if (coEvents.size() == 0)
@@ -39,8 +39,15 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		// block 
 		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 		y += min_ty * dy + ny * 0.4f;
-		//if (nx != 0) vx = 0;
+		/*if (nx != 0) vx = -vx;*/
 		if (ny != 0) vy = 0;
+		if (vx < 0 && x < -150) {
+		 vx = -vx;
+	}
+
+	if (vx > 0 && x > 320) {
+	  vx = -vx;
+	}
 	}
 	/*if (vx < 0 && x < 0) {
 		x = 0; vx = -vx;
